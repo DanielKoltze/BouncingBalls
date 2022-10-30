@@ -20,3 +20,12 @@ body{
     justify-content: space-around;
     height: 70vh;
 }
+.timer{
+    font-size: 30px;
+}
+.canvasContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

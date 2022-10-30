@@ -16,9 +16,11 @@ let drawIsOn = false
 let ballColor = 'random'
 let backgroundColor = 'white'
 
-let numberOfBalls = 1
-let refreshRate = 30  //20 til 60
 let balls = []
+let numberOfBalls = 1
+let refreshRate = 15  
+
+
 const colors = ['red','green','blue','pink','brown','black','yellow']
 //ball size randomize
 
@@ -71,6 +73,15 @@ class Ball{
             number = number * -1
         }
         return number
+    }
+
+    //checker om bolden bliver ramt af onHit
+    checkHit(mouseX,mouseY){
+        if(mouseX-this.size < this.x && mouseX+this.size > this.x && mouseY-this.size < this.y && mouseY+this.size > this.y){
+            return true
+        }else{
+            return false
+        }
     }
 
 }
@@ -166,7 +177,7 @@ let speedDrowndown = document.querySelectorAll('#speedDropdown option')
 speedDrowndown.forEach(button => {
     button.addEventListener('click', (e) => {
         clearInterval(interval)
-        refreshRate = button.innerHTML * 10
+        refreshRate = button.innerHTML * 4
         interval = setInterval(updateCanvas,refreshRate)
     })
 })
@@ -190,11 +201,64 @@ drawMode.addEventListener('click', (e) => {
 //noget med at trykke på knapperne
 canvasElement.addEventListener("click", (e) => {
 
+    balls.forEach((ball,i) => {
+        let ballHit = ball.checkHit(e.offsetX,e.offsetY)
+        if(ballHit){
+            balls.splice(i,1)
+            numberOfBalls = numberOfBalls - 1
+        }
+    })
     
-    mousex = e.offsetX;
-    mousey = e.offsetY;
-    console.log(balls[0].y)
-    console.log(mousey)
+    
     
   });
   
+
+  class Timer{
+    constructor(){
+        this.tens = 0
+        this.seconds = 0
+        this.timer = null
+        this.updateP = document.querySelector('.timer')
+
+    }
+    startTimer(){
+        this.timer = setInterval(() => {
+            this.tens = this.tens + 1
+            if(this.seconds < 10){
+                this.updateP.innerHTML = '0' + this.seconds + ':'
+            }else{
+                this.updateP.innerHTML = this.seconds + ':'
+            }
+            if(this.tens < 10){
+                this.updateP.innerHTML = this.updateP.innerHTML + '0' + this.tens
+            }else if(this.tens < 100){
+                this.updateP.innerHTML = this.updateP.innerHTML + this.tens
+            }else{
+                this.tens = 0
+                this.seconds = this.seconds + 1
+            }
+            
+            
+            if(balls.length === 0){
+                this.stopTimer()
+            }
+        },10)
+    }
+    stopTimer(){
+
+        clearInterval(this.timer)
+    }
+
+  }
+
+
+const startGame = document.querySelector('#startGameButton')
+startGame.addEventListener('click', (e) => {
+    const timerHTML = document.querySelector('.timer')
+    let timer = new Timer()
+    timer.startTimer()
+})
+
+
+
