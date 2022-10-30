@@ -4,6 +4,11 @@ const canvas = canvasElement.getContext('2d')
 
 
 
+canvasElement.width = 1000;
+canvasElement.height = 600;
+
+
+
 //click på dem som et spil
 //de kunne collide
 
@@ -12,7 +17,7 @@ let ballColor = 'random'
 let backgroundColor = 'white'
 
 let numberOfBalls = 1
-let refreshRate = 3000 //20 til 60
+let refreshRate = 30  //20 til 60
 let balls = []
 const colors = ['red','green','blue','pink','brown','black','yellow']
 //ball size randomize
@@ -23,9 +28,9 @@ class Ball{
         //sætter tilfældigt tall mellem -5 til 5
         this.xDirection = this.setDirection()
         this.yDirection = this.setDirection()
-        this.size = Math.floor(Math.random() * 7)+5
+        this.size = randomIntFromInterval(20,40)
         this.color = this.setColor(ballColor)
-        this.x = randomIntFromInterval(this.size,canvasElement.width-this.size)//Math.floor((Math.random() * canvasElement.width)+this.size)    
+        this.x = randomIntFromInterval(this.size,canvasElement.width-this.size)  
         this.y = randomIntFromInterval(this.size,canvasElement.height-this.size)
     }
     move(){
@@ -48,7 +53,11 @@ class Ball{
         //giver et random tal fra 0-6 og returnerer så farven i arrayet
         if(color === 'random'){
             let number = randomIntFromInterval(0,6)
-            return colors[number]
+            return `rgba(${Math.random() * 256},
+            ${Math.random() * 256},
+            ${Math.random() * 256},
+            ${Math.random()}
+            )`
         }else{
             return color
         }
@@ -90,12 +99,13 @@ function createBalls(number){
 
 let interval = setInterval(updateCanvas, refreshRate)
 
+//requestAnimationFrame(updateCanvas)
 
 function updateCanvas(){
     //opdaterer canvas med baggrunden så vi får en illusion af at bolden bevæger sig
     if(!drawIsOn){
     canvas.fillStyle = backgroundColor
-    canvas.fillRect(0,0,800,800) 
+    canvas.fillRect(0,0,40000,40000) 
     }
     balls.forEach(ball => {
         //tegner vi bolden
@@ -106,7 +116,9 @@ function updateCanvas(){
         //flytter vi på boldens x og y koordinater
         ball.move()
       
+        //requestAnimationFrame(updateCanvas)
     })
+    
 }
 
 
@@ -176,12 +188,13 @@ drawMode.addEventListener('click', (e) => {
 
 
 //noget med at trykke på knapperne
-canvasElement.addEventListener("mousemove", (e) => {
+canvasElement.addEventListener("click", (e) => {
 
     
-    mousex = e.clientX;
-    mousey = e.clientY;
+    mousex = e.offsetX;
+    mousey = e.offsetY;
     console.log(balls[0].y)
-    console.log(e.clientY/4.466666666666667)
+    console.log(mousey)
+    
   });
   
