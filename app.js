@@ -11,7 +11,7 @@ canvasElement.height = 600;
 
 //click på dem som et spil
 //de kunne collide
-
+let collisionOn = false
 let drawIsOn = false
 let ballColor = 'random'
 let backgroundColor = 'white'
@@ -45,16 +45,20 @@ class Ball{
     checkCollision(){
         // over 0 eller under height-size på ball så ganger vi med .1 altså skifter fortegn
         if(this.y < 0+this.size || this.y > canvasElement.height-this.size){
-            this.yDirection = this.yDirection*-1
+            this.changeYDirection()
         }
         if(this.x < 0+this.size || this.x > canvasElement.width-this.size){
-            this.xDirection = this.xDirection*-1
+            this.changeXDirection()
         }
     }
+    changeYDirection(){
+        this.yDirection = this.yDirection*-1
+    }
+    changeXDirection(){
+        this.xDirection = this.xDirection*-1
+    }
     setColor(color){
-        //giver et random tal fra 0-6 og returnerer så farven i arrayet
         if(color === 'random'){
-            let number = randomIntFromInterval(0,6)
             return `rgba(${Math.random() * 256},
             ${Math.random() * 256},
             ${Math.random() * 256},
@@ -118,7 +122,7 @@ function updateCanvas(){
     canvas.fillStyle = backgroundColor
     canvas.fillRect(0,0,40000,40000) 
     }
-    balls.forEach(ball => {
+    balls.forEach((ball,index) => {
         //tegner vi bolden
         canvas.beginPath();
         canvas.arc(ball.x,ball.y,ball.size,0,Math.PI *2)
@@ -126,10 +130,31 @@ function updateCanvas(){
         canvas.fill();
         //flytter vi på boldens x og y koordinater
         ball.move()
-      
+        
+        //retter boldene op hvis der er sammenstød
+        if(collisionOn){
+        checkCollisionWithBalls(ball,index)
+        }
         //requestAnimationFrame(updateCanvas)
     })
     
+}
+
+
+//checker om boldene rammer hinandne
+function checkCollisionWithBalls(ball,index){
+    //i starter på index så vi ikke tjekker flere end en gang og plus en så vi ikke tjekke om samme bold rammer sig selv
+    for (let i = index+1; i < balls.length; i++) {
+    
+        //checker om bolden rammer x og y koordinanterne på de andre bolde. Hvis ja så skiftes der retning
+        if(ball.checkHit(balls[i].x,balls[i].y)){
+            ball.changeXDirection()
+            ball.changeYDirection()
+            balls[i].changeXDirection()
+            balls[i].changeYDirection()
+        }
+        
+    }
 }
 
 
@@ -191,10 +216,18 @@ drawMode.addEventListener('click', (e) => {
     }else {
         drawIsOn = true
     }
-    
-    
 
 })
+
+let collisionMode = document.getElementById('ballsCollision')
+collisionMode.addEventListener('click', (e) => {
+    if(!e.target.checked){
+        collisionOn = false
+    }else {
+        collisionOn = true
+    }
+})
+
 
 
 
